@@ -6,7 +6,7 @@ const router = express.Router();
 const products = [];
 
 router.post('/add-product',(req,res,next) => {
-  products.push(req.body)
+  products.push({title: req.body.title})
   res.redirect('/');
 });
 
