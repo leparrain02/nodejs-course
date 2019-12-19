@@ -7,15 +7,16 @@ block content
   if prods.length > 0
     .grid
       each product in prods
+        - var imageURL = product.imageURL;
         article.card.product-item
           header.card__header
             h1.product__title #{product.title}
           .card__image
-            img(src="https://dictionary.cambridge.org/images/thumb/book_noun_001_01679.jpg?version=5.0.63", alt="A Book")
+            img(src=imageURL, alt="A Book")
           .card__content
-            h2.product__price $19.99
-            p.product__description A very interesting book about so many even more interesting things!
+            h2.product__price $#{product.price}
+            p.product__description #{product.description}
           .card__actions
             button.btn Add to Cart
   else
-    h1 No Product     
+    h1 No Product   
