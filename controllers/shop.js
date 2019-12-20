@@ -6,7 +6,15 @@ exports.getListProducts = (req,res,next) => {
     res.render('shop/product-list',{prods: products, pageTitle: 'Products list', path: '/products'});
   });
 
-};
+}
+
+exports.getProduct = (req,res,next) => {
+  const id = req.params.productId;
+  Product.findById(id,product => {
+    console.log(product);
+  });
+  res.redirect("/products");
+}
 
 exports.getIndex = (req,res,next) => {
   res.render('shop/index',{pageTitle: 'My Shop', path: '/'});

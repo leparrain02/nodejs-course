@@ -8,6 +8,7 @@ block content
     .grid
       each product in prods
         - var imageURL = product.imageURL;
+        - var id = product.id;
         article.card.product-item
           header.card__header
             h1.product__title #{product.title}
@@ -17,6 +18,7 @@ block content
             h2.product__price $#{product.price}
             p.product__description #{product.description}
           .card__actions
+            a.btn(href=`/products/${id}`) Detail
             button.btn Add to Cart
   else
     h1 No Product   
