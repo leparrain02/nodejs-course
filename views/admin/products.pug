@@ -8,6 +8,7 @@ block content
     .grid
       each product in prods
         - var imageURL = product.imageURL;
+        - var id = product.id;
         article.card.product-item
           header.card__header
             h1.product__title #{product.title}
@@ -17,7 +18,7 @@ block content
             h2.product__price $#{product.price}
             p.product__description #{product.description}
           .card__actions
-            a.btn(href="/admin/edit-product") Edit
+            a.btn(href=`/admin/edit-product/${id}`) Edit
             form(action="/admin/delete-product", method="POST")
               button.btn(action="submit") Delete
   else
