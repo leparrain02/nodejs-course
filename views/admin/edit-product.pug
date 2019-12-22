@@ -8,7 +8,8 @@ block content
   - var title = (editing ? product.title : '')
   - var imageURL = (editing ? product.imageURL : '')
   - var price = (editing ? product.price : '')
-  form.product-form(action="/admin/add-product", method="POST")
+  - var action = (editing ? '/admin/edit-product' : '/admin/add-product')
+  form.product-form(action=action, method="POST")
     .form-control
       label(for="title") Title
       input(type="text", name="title" value=title)#title
@@ -21,5 +22,9 @@ block content
     .form-control
       label(for="description") Description
       textarea(name="description", rows="5")#description #{editing ? product.description : ''}
+    if editing
+      - var id = product.id
+      .form-control
+        input(type="hidden", value=id, name="productId")
     button.btn(type="submit") #{editing ? 'Update Product' : 'Add Product'}
     
