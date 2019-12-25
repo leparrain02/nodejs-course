@@ -29,4 +29,34 @@ module.exports = class Cart {
       });
     });
   };
+
+  static removeCart(id,productPrice){
+    fs.readFile(p,(err, data) => {
+      if(err){
+        return;
+      }
+      const updatedProducts = JSON.parse(data);
+      const productQty = _.get(updatedProducts.product.find(prod => prod.id === id),'qty');
+       
+      updatedProducts.product = updatedProducts.product.filter(prod => prod.id !== id);
+      updatedProducts.totalPrice = updatedProducts.totalPrice - productPrice * productQty;
+
+      fs.writeFile(p,JSON.stringify(updatedProducts), (err) => {
+        if(err){
+            console.log(err);
+        }
+      });
+
+    });
+  };
+
+  static getCart(cb){
+    fs.readFile(p,(err, data) => {
+      if(err){
+        cb(null);
+      } else {
+        cb(JSON.parse(data));
+      }
+    });
+  };
 }

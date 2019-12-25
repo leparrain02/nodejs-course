@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 
+const Cart = require('./cart');
+
 
 const p = path.join(path.dirname(process.mainModule.filename),'data','products.json');
 
@@ -22,16 +24,16 @@ module.exports = class Product {
     this.imageURL = imageURL;
     this.price = price;
     this.description = description;
-  }
+  };
 
   save(){
     readDataFile(products => {
       if(this.id){
         const productIndex = products.findIndex(prod => prod.id === this.id);
         products[productIndex] = this;
-        console.log(products);
       } else {
         this.id = Math.random().toString();
+        products.push(this);
       }
       fs.writeFile(p,JSON.stringify(products),(err) => {
         if(err){
@@ -39,17 +41,31 @@ module.exports = class Product {
         }
       });
     });
-  }
+  };
 
   static fetchAll(cb){ 
     readDataFile(cb); 
-  }
+  };
 
   static findById(id,cb){
     readDataFile(products => {
       const product = products.find(prod => prod.id === id);
       cb(product);
     });
-  }
+  };
+
+  static deleteById(id){
+    readDataFile(products => {
+      const product = products.find(prod => prod.id === id);
+      const updatedProducts = products.filter(prod => prod.id !== id);
+      fs.writeFile(p,JSON.stringify(updatedProducts), err => {
+        if(err){
+          console.log(err);
+        } else {
+           Cart.removeCart(id,product.price);
+        }
+      });
+    });
+  };
   
  }

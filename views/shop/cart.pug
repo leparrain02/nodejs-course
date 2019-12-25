@@ -4,4 +4,9 @@ block styles
   link(rel="stylesheet", href="/css/product.css")
 
 block content
-  h1 This is yours added items
+  if products.length > 0
+    ul
+      for product in products
+        li #{product.product.title} (#{product.qty})
+  else
+    h1 No product in cart

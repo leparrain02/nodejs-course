@@ -22,7 +22,20 @@ exports.getIndex = (req,res,next) => {
 };
 
 exports.getCart = (req,res,next) => {
-  res.render('shop/cart',{pageTitle: 'Your Cart', path: '/cart'});
+  Cart.getCart(cart => {
+    Product.fetchAll(products =>{
+      const productsCart = [];
+      console.log(cart);
+      for(item of cart.product){
+        console.log(item);
+        product = products.find( prod => prod.id === item.id);
+        console.log(product);
+        productsCart.push({product: product, qty: item.qty});
+      }
+      console.log(productsCart);
+      res.render('shop/cart',{pageTitle: 'Your Cart', path: '/cart', products: productsCart});
+    });
+  });
 };
 
 exports.postCart = (req,res,next) => {

@@ -15,4 +15,6 @@ router.get('/edit-product/:productId',adminController.getEditProducts);
 
 router.post('/edit-product',adminController.postEditProducts);
 
+router.get('/delete-product/:productId',adminController.getDeleteProducts);
+
 module.exports = router;
