@@ -6,7 +6,7 @@ const _ = require('lodash');
 const p = path.join(path.dirname(process.mainModule.filename),'data','cart.json');
 
 module.exports = class Cart {
-  static addCart(id,productPrice){
+  static addCart(id,productPrice,cb){
     fs.readFile(p,(err, data) => {
       let cart = {product: [], totalPrice: 0};
       if(!err){
@@ -26,14 +26,15 @@ module.exports = class Cart {
         if(err){
             console.log(err);
         }
+        cb();
       });
     });
   };
 
-  static removeCart(id,productPrice){
+  static removeCart(id,productPrice,cb){
     fs.readFile(p,(err, data) => {
       if(err){
-        return;
+        return cb();
       }
       const updatedProducts = JSON.parse(data);
       const productQty = _.get(updatedProducts.product.find(prod => prod.id === id),'qty');
@@ -45,6 +46,7 @@ module.exports = class Cart {
         if(err){
             console.log(err);
         }
+        cb();
       });
 
     });

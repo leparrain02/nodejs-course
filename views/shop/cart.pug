@@ -7,6 +7,11 @@ block content
   if products.length > 0
     ul
       for product in products
-        li #{product.product.title} (#{product.qty})
+        - var prodId = product.product.id
+        li 
+          p #{product.product.title} (#{product.qty})
+          form(action="/cart-delete-item", method="POST")
+            input(type="hidden", name="productId", value=prodId)
+            button.btn(type="submit") Delete
   else
     h1 No product in cart

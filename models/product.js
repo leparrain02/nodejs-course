@@ -26,7 +26,7 @@ module.exports = class Product {
     this.description = description;
   };
 
-  save(){
+  save(cb){
     readDataFile(products => {
       if(this.id){
         const productIndex = products.findIndex(prod => prod.id === this.id);
@@ -39,6 +39,7 @@ module.exports = class Product {
         if(err){
           console.log(err);
         }
+        cb();
       });
     });
   };
@@ -54,16 +55,20 @@ module.exports = class Product {
     });
   };
 
-  static deleteById(id){
+  static deleteById(id,cb){
     readDataFile(products => {
       const product = products.find(prod => prod.id === id);
       const updatedProducts = products.filter(prod => prod.id !== id);
       fs.writeFile(p,JSON.stringify(updatedProducts), err => {
         if(err){
           console.log(err);
+          cb();
         } else {
-           Cart.removeCart(id,product.price);
+           Cart.removeCart(id,product.price,() => {
+             cb();
+           });
         }
+        
       });
     });
   };
