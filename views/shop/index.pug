@@ -4,22 +4,4 @@ block styles
   link(rel="stylesheet", href="/css/product.css")
 
 block content
-  if prods.length > 0
-    .grid
-      each product in prods
-        - var title = product.title
-        - var imageURL = product.imageURL;
-        - var id = product.id;
-        article.card.product-item
-          header.card__header
-            h1.product__title #{product.title}
-          .card__image
-            img(src=imageURL, alt=title)
-          .card__content
-            h2.product__price $#{product.price}
-            p.product__description #{product.description}
-          .card__actions
-            a.btn(href=`/products/${id}`) Detail
-            include ../layouts/add-to-cart.pug
-  else
-    h1 No Product  
+  h1 Welcome to my shop!!!  
