@@ -5,12 +5,12 @@ block styles
 
 block content
   - var title = product.title
-  - var imageURL = product.imageURL
+  - var imageUrl = product.imageUrl
   - var id = product.id
   main.centered
     h1 #{product.title} 
     hr
-    img(src=imageURL, alt=title)
+    img(src=imageUrl, alt=title)
     h2 $#{product.price }
     p #{product.description}
     include ../layouts/add-to-cart.pug
