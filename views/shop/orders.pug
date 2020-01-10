@@ -4,4 +4,14 @@ block styles
   link(rel="stylesheet", href="/css/product.css")
 
 block content
-  h1 Your orders
+  if orders.length > 0
+    h1 Your orders
+    ul
+      for order in orders
+        li
+          h2 # #{order.id}
+          ul
+            for product in order.products
+              p #{product.title} quantity: #{product.orderItem.quantity}
+  else
+    h1 You have no order

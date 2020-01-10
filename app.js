@@ -10,6 +10,8 @@ const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 
 const app = express();
@@ -22,6 +24,15 @@ app.use((req, res, next) =>{
   User.findByPk(1)
   .then(user => {
     req.user = user;
+    return user.getCart();
+  })
+  .then(cart => {
+    if(!cart){
+      return req.user.createCart();
+    }
+    return cart;
+  })
+  .then(cart => {
     next();
   })
   .catch(err => {
@@ -40,6 +51,10 @@ Cart.belongsTo(User,{constraint: true, onDelete: 'CASCADE'});
 User.hasOne(Cart);
 Cart.belongsToMany(Product,{through: CartItem});
 Product.belongsToMany(Cart,{through: CartItem});
+Order.belongsTo(User);
+User.hasMany(Order);
+Product.belongsToMany(Order,{through: OrderItem});
+Order.belongsToMany(Product,{through: OrderItem});
 
 sequelize.sync()
 .then(result => {

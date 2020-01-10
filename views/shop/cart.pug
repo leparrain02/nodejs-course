@@ -2,16 +2,22 @@ extends ../layouts/main-layout.pug
 
 block styles
   link(rel="stylesheet", href="/css/product.css")
+  link(rel="stylesheet", href="/css/cart.css")
 
 block content
   if products.length > 0
-    ul
+    ul.cart__item-list
       for product in products
-        - var prodId = product.product.id
-        li 
-          p #{product.product.title} (#{product.qty})
+        - var prodId = product.id
+        li.cart__item
+          h1 #{product.title} 
+          h2 Quantity: #{product.cartItem.quantity}
           form(action="/cart-delete-item", method="POST")
             input(type="hidden", name="productId", value=prodId)
             button.btn(type="submit") Delete
+    hr
+    .centered
+      form(action="/create-order", method="POST")
+        button.btn(type="submit") Order Now!
   else
     h1 No product in cart
