@@ -5,14 +5,8 @@ const bodyparser = require('body-parser');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const error404Controller = require('./controllers/error404');
-const sequelize = require('./util/database');
-const Product = require('./models/product');
+const MongoConnect = require('./util/database').MongoConnect;
 const User = require('./models/user');
-const Cart = require('./models/cart');
-const CartItem = require('./models/cart-item');
-const Order = require('./models/order');
-const OrderItem = require('./models/order-item');
-
 
 const app = express();
 app.set('view engine','pug');
@@ -21,23 +15,15 @@ app.use(bodyparser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname,'public')));
 
 app.use((req, res, next) =>{
-  User.findByPk(1)
+  User.findById('5e1e69011eef691c4a4cc4e1')
   .then(user => {
-    req.user = user;
-    return user.getCart();
-  })
-  .then(cart => {
-    if(!cart){
-      return req.user.createCart();
-    }
-    return cart;
-  })
-  .then(cart => {
+    req.user = new User(user.username, user.email, user.cart, user._id);
     next();
   })
   .catch(err => {
     console.log(err);
   });
+  
 });
 
 app.use('/admin',adminRoutes);
@@ -45,30 +31,6 @@ app.use(shopRoutes);
 
 app.use(error404Controller.getError404);
 
-Product.belongsTo(User,{constraint: true, onDelete: 'CASCADE'});
-User.hasMany(Product);
-Cart.belongsTo(User,{constraint: true, onDelete: 'CASCADE'});
-User.hasOne(Cart);
-Cart.belongsToMany(Product,{through: CartItem});
-Product.belongsToMany(Cart,{through: CartItem});
-Order.belongsTo(User);
-User.hasMany(Order);
-Product.belongsToMany(Order,{through: OrderItem});
-Order.belongsToMany(Product,{through: OrderItem});
-
-sequelize.sync()
-.then(result => {
-  return User.findByPk(1);
-})
-.then(user => {
-  if(!user){
-    return User.create({name: 'Marc', email: 'test@noemail.com'});
-  }
-  return user;
-})
-.then(user => {
+MongoConnect(() =>{
   app.listen(3000);
-})
-.catch(err => {
-    console.log(err);
 });

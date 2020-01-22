@@ -9,7 +9,7 @@ block content
       each product in prods
         - var title = product.title
         - var imageURL = product.imageUrl;
-        - var id = product.id;
+        - var id = product._id;
         article.card.product-item
           header.card__header
             h1.product__title #{product.title}

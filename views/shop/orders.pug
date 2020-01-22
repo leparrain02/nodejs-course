@@ -9,9 +9,9 @@ block content
     ul
       for order in orders
         li
-          h2 # #{order.id}
+          h2 # #{order._id}
           ul
-            for product in order.products
-              p #{product.title} quantity: #{product.orderItem.quantity}
+            for product in order.items
+              p #{product.title} quantity: #{product.quantity}
   else
     h1 You have no order

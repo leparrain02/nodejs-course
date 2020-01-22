@@ -8,10 +8,10 @@ block content
   if products.length > 0
     ul.cart__item-list
       for product in products
-        - var prodId = product.id
+        - var prodId = product._id
         li.cart__item
           h1 #{product.title} 
-          h2 Quantity: #{product.cartItem.quantity}
+          h2 Quantity: #{product.quantity}
           form(action="/cart-delete-item", method="POST")
             input(type="hidden", name="productId", value=prodId)
             button.btn(type="submit") Delete

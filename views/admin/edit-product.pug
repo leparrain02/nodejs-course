@@ -23,7 +23,7 @@ block content
       label(for="description") Description
       textarea(name="description", rows="5")#description #{editing ? product.description : ''}
     if editing
-      - var id = product.id
+      - var id = product._id
       .form-control
         input(type="hidden", value=id, name="productId")
     button.btn(type="submit") #{editing ? 'Update Product' : 'Add Product'}

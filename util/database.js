@@ -1,8 +1,23 @@
-const Sequelize = require('sequelize');
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
 
-const sequelize = new Sequelize('node_course','node-rw','qaz1234',{
-  dialect: 'mysql', 
-  host: 'localhost'
-});
+let _db;
 
-module.exports = sequelize;
+exports.MongoConnect = cb => {  
+  MongoClient.connect('mongodb://node-rw:qaz1234@localhost:27017/node_course?authSource=admin',{ useUnifiedTopology: true },(err, client) => {
+    if(err){
+      console.log(err);
+      throw err;
+    }
+    console.log('Connected');
+    _db=client.db();
+    cb();
+  });
+};
+
+exports.getDb = () => {
+  if(_db){
+    return _db;
+  }
+  throw 'DB not define';
+};
