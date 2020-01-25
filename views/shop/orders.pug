@@ -11,7 +11,7 @@ block content
         li
           h2 # #{order._id}
           ul
-            for product in order.items
-              p #{product.title} quantity: #{product.quantity}
+            for p in order.products
+              p #{p.product.title} quantity: #{p.quantity}
   else
     h1 You have no order
