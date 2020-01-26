@@ -1,17 +1,17 @@
 extends ../layouts/main-layout.pug 
 
 block styles
-  link(rel="stylesheet", href="/css/product.css")
+  link(rel="stylesheet", href="/css/orders.css")
 
 block content
   if orders.length > 0
     h1 Your orders
-    ul
+    ul.orders
       for order in orders
-        li
-          h2 # #{order._id}
-          ul
+        li.orders__item
+          h2 Orders - # #{order._id}
+          ul.orders__products
             for p in order.products
-              p #{p.product.title} quantity: #{p.quantity}
+              li.orders__products-item #{p.product.title} quantity: #{p.quantity}
   else
     h1 You have no order
