@@ -4,6 +4,7 @@ block styles
   link(rel="stylesheet", href="/css/cart.css")
 
 block content
+  - var token = csrfToken
   if products.length > 0
     ul.cart__item-list
       for product in products
@@ -14,9 +15,11 @@ block content
           form(action="/cart-delete-item", method="POST")
             input(type="hidden", name="productId", value=prodId)
             button.btn.danger(type="submit") Delete
+            input(type="hidden", name="_csrf", value=token)
     hr
     .centered
       form(action="/create-order", method="POST")
         button.btn(type="submit") Order Now!
+        input(type="hidden", name="_csrf", value=token)
   else
     h1 No product in cart

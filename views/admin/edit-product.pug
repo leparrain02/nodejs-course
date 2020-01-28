@@ -9,6 +9,7 @@ block content
   - var imageUrl = (editing ? product.imageUrl : '')
   - var price = (editing ? product.price : '')
   - var action = (editing ? '/admin/edit-product' : '/admin/add-product')
+  - var token = csrfToken
   form.product-form(action=action, method="POST")
     .form-control
       label(for="title") Title
@@ -27,4 +28,5 @@ block content
       .form-control
         input(type="hidden", value=id, name="productId")
     button.btn(type="submit") #{editing ? 'Update Product' : 'Add Product'}
+    input(type="hidden", name="_csrf", value=token)
     
