@@ -1,6 +1,17 @@
+const crypto = require('crypto');
+
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+const config = require('config');
 
 const User = require('../models/user');
+
+const transporter = nodemailer.createTransport(sendgridTransport({
+  auth: {
+    api_key: config.mailer.apikey
+  }
+}));
 
 
 exports.getLogin = (req,res,next) => {
@@ -95,10 +106,64 @@ exports.postSignup = (req, res, next) => {
     })
     .then(result => {
       res.redirect('/login');
+      return transporter.sendMail({
+        to: email,
+        from: config.mailer.from,
+        subject: 'Signup sucessfull',
+        html: '<h1>Sucessfull!!!</h1>'
+      })
+      .catch(err => {
+        console.log(err);
+      });
     });
   })
   .catch(err => {
     console.log(err);
   });
 
+};
+
+exports.getReset = (req,res,next) => {
+  let message = req.flash('error');
+  if(message.length > 0){
+    message = message[0];
+  } else {
+    message = null;
+  }
+
+  res.render('auth/reset-password',{
+    pageTitle: 'Reset Password',
+    path: '/reset',
+    errorMessage: message
+  });
+};
+
+exports.postReset = (req,res,next) => {
+  crypto.randomBytes(32,(err,buffer) => {
+    if(err){
+      console.log(err);
+      return res.redirect('/reset');
+    }
+    const token = buffer.toString('hex');
+    User.findOne({email: req.body.email})
+    .then(user => {
+      if(!user){
+        req.flash('error','No user found with that email');
+        return res.redirect('/reset');
+      }
+      user.resetToken=token;
+      user.resetTokenExpiration=Date.now() + 3600000;
+      return user.save()
+      .then(result => {
+        console.log(`http://localhost:3000/reset/${token}`);
+        res.redirect('/login');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  });
 };

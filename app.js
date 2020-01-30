@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoDBSession = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const config = require('config');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -13,7 +14,9 @@ const authRoutes = require('./routes/auth');
 const error404Controller = require('./controllers/error404');
 const User = require('./models/user');
 
-const MONGODBURI = 'mongodb://node-rw:qaz1234@localhost:27017/node_course?authSource=admin&useUnifiedTopology=true';
+
+
+const MONGODBURI = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}:${config.mongodb.password}/${config.mongodb.dbname}?${config.mongodb.paramURI}`;
 
 const store = new MongoDBSession({
   uri: MONGODBURI,
@@ -29,7 +32,7 @@ app.use(bodyparser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname,'public')));
 
 app.use(session({
-  secret: 'my really long secret', 
+  secret: config.app.sessions.secret, 
   resave: false, 
   saveUninitialized: false,
   store: store
@@ -67,9 +70,9 @@ app.use(authRoutes);
 
 app.use(error404Controller.getError404);
 
-mongoose.connect(MONGODBURI,{ useUnifiedTopology: true, useNewUrlParser: true })
+mongoose.connect(MONGODBURI,config.mongodb.params)
 .then(result => {
-  app.listen(3000);
+  app.listen(config.app.port);
 })
 .catch(err => {
   console.log(err);

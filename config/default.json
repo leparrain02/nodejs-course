@@ -1,0 +1,24 @@
+{
+  "mongodb": {
+    "host": "localhost",
+    "port": "27017",
+    "dbname": "node_course",
+    "user": "",
+    "password": "",
+    "paramURI": "authSource=admin&useUnifiedTopology=true",
+    "params": {
+      "useUnifiedTopology": true,
+      "useNewUrlParser": true
+    }
+  },
+  "app": {
+    "port": 3000,
+    "sessions": {
+      "secret": ""
+    }
+  },
+  "mailer": {
+    "apikey": "",
+    "from": "shop@marc-nodecourse.ca"
+  }
+}
