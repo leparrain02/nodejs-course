@@ -1,17 +1,17 @@
 const crypto = require('crypto');
 
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
-const config = require('config');
+// const nodemailer = require('nodemailer');
+// const sendgridTransport = require('nodemailer-sendgrid-transport');
+// const config = require('config');
 
 const User = require('../models/user');
 
-const transporter = nodemailer.createTransport(sendgridTransport({
-  auth: {
-    api_key: config.mailer.apikey
-  }
-}));
+// const transporter = nodemailer.createTransport(sendgridTransport({
+//   auth: {
+//     api_key: config.mailer.apikey
+//   }
+// }));
 
 
 exports.getLogin = (req,res,next) => {
@@ -106,15 +106,15 @@ exports.postSignup = (req, res, next) => {
     })
     .then(result => {
       res.redirect('/login');
-      return transporter.sendMail({
-        to: email,
-        from: config.mailer.from,
-        subject: 'Signup sucessfull',
-        html: '<h1>Sucessfull!!!</h1>'
-      })
-      .catch(err => {
-        console.log(err);
-      });
+      // return transporter.sendMail({
+      //   to: email,
+      //   from: config.mailer.from,
+      //   subject: 'Signup sucessfull',
+      //   html: '<h1>Sucessfull!!!</h1>'
+      // })
+      // .catch(err => {
+      //   console.log(err);
+      // });
     });
   })
   .catch(err => {
@@ -166,4 +166,67 @@ exports.postReset = (req,res,next) => {
       console.log(err);
     });
   });
+};
+
+exports.getNewPassword = (req,res,next) => {
+  const token = req.params.token;
+
+  User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
+  .then(user => {
+    if(!user){
+      req.flash('error','Invalid token');
+      return res.redirect('/login');
+    }
+    let message = req.flash('error');
+    if(message.length > 0){
+      message = message[0];
+    } else {
+      message = null;
+    }
+  
+    res.render('auth/new-password',{
+      pageTitle: 'Enter new Password',
+      path: '/reset',
+      errorMessage: message,
+      userId: user._id,
+      resetToken: token
+    });
+
+  })
+  .catch(err => {
+    console.log(err);
+  });
+};
+
+
+exports.postNewPassword = (req,res,next) => {
+  const userId = req.body.userId;
+  const password = req.body.password;
+  const token = req.body.resetToken;
+  let resetUser;
+
+  User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()},_id: userId})
+  .then(user => {
+    if(!user){
+      req.flash('error','Invalid token');
+      return res.redirect('/login');
+    }
+    resetUser = user;
+    bcrypt.hash(password,12)
+    .then(encryptedPassword => {
+      resetUser.password = encryptedPassword;
+      resetUser.resetToken = undefined;
+      resetUser.resetTokenExpiration = undefined;
+      return resetUser.save();
+    })
+    .then(result => {
+      res.redirect('/login');
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  })
+  .catch(err => {
+    console.log(err);
+  });  
 };
