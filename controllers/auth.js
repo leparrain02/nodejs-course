@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 // const nodemailer = require('nodemailer');
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 // const config = require('config');
@@ -89,23 +90,27 @@ exports.postSignup = (req, res, next) => {
   const password = req.body.password;
   const confirmpassword = req.body.confirmpassword;
 
-  User.findOne({email: email})
-  .then(existUser => {
-    if(existUser){
-      req.flash('error','User already exists.');
-      return res.redirect('/signup');
-    }
-    return bcrypt.hash(password,12)
-    .then(encryptPassword => {
-      const user = new User({
-        email: email,
-        password: encryptPassword,
-        cart: {items: []}
-      });
-      return user.save();
-    })
-    .then(result => {
-      res.redirect('/login');
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    console.log(errors);
+    return res.status(422).render('auth/signup',{
+      pageTitle: 'Signup',
+      path: '/signup',
+      errorMessage: errors.array()[0].msg
+    });
+  }
+
+  bcrypt.hash(password,12)
+  .then(encryptPassword => {
+    const user = new User({
+      email: email,
+      password: encryptPassword,
+      cart: {items: []}
+    });
+    return user.save();
+  })
+  .then(result => {
+    res.redirect('/login');
       // return transporter.sendMail({
       //   to: email,
       //   from: config.mailer.from,
@@ -115,12 +120,10 @@ exports.postSignup = (req, res, next) => {
       // .catch(err => {
       //   console.log(err);
       // });
-    });
   })
   .catch(err => {
     console.log(err);
   });
-
 };
 
 exports.getReset = (req,res,next) => {
