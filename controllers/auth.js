@@ -26,7 +26,8 @@ exports.getLogin = (req,res,next) => {
   res.render('auth/login',{
     pageTitle: 'Login',
     path: '/login',
-    errorMessage: message
+    errorMessage: message,
+    email: ''
   });
 };
 
@@ -37,8 +38,12 @@ exports.postLogin = (req,res,next) => {
   User.findOne({email: email})
   .then(user => {
     if(!user){
-      req.flash('error','Invalid username or password.');
-      return res.redirect('/login');
+      return res.render('auth/login',{
+        pageTitle: 'Login',
+        path: '/login',
+        errorMessage: 'Invalid username or password.',
+        email: email
+      });
     }
     bcrypt.compare(password, user.password)
     .then(doMatch => {
@@ -52,12 +57,16 @@ exports.postLogin = (req,res,next) => {
           res.redirect('/');
         });
       }
-      req.flash('error','Invalid username or password.')
-      res.redirect('/login');
+      res.render('auth/login',{
+        pageTitle: 'Login',
+        path: '/login',
+        errorMessage: 'Invalid username or password.',
+        email: email
+      });
     });
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 };
 
@@ -122,7 +131,7 @@ exports.postSignup = (req, res, next) => {
       // });
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 };
 
@@ -162,11 +171,11 @@ exports.postReset = (req,res,next) => {
         res.redirect('/login');
       })
       .catch(err => {
-        console.log(err);
+        next(new Error(err));
       });
     })
     .catch(err => {
-      console.log(err);
+      next(new Error(err));
     });
   });
 };
@@ -197,7 +206,7 @@ exports.getNewPassword = (req,res,next) => {
 
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 };
 
@@ -226,10 +235,10 @@ exports.postNewPassword = (req,res,next) => {
       res.redirect('/login');
     })
     .catch(err => {
-      console.log(err);
+      next(new Error(err));
     });
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });  
 };

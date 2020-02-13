@@ -54,7 +54,7 @@ exports.getCart = (req,res,next) => {
       isAuthenticated: req.session.isLogged
     });
   })
-  .catch(err => {console.log(err)});
+  .catch(err => {next(new Error(err));});
   
 };
 
@@ -65,7 +65,7 @@ exports.postCart = (req,res,next) => {
     res.redirect('/cart');
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 };
 
@@ -76,7 +76,7 @@ exports.postCartDeleteItem = (req,res,next) => {
     res.redirect('/cart');
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 };
 
@@ -94,7 +94,6 @@ exports.postCreateOrder = (req,res,next) => {
       },
       products: products
     });
-    console.log(order);
     return order.save();
   })
   .then(result => {
@@ -103,7 +102,7 @@ exports.postCreateOrder = (req,res,next) => {
     res.redirect('/orders');
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 }
 
@@ -118,7 +117,7 @@ exports.getOrders = (req,res,next) => {
     });
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 };
 
