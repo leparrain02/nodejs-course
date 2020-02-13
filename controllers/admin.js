@@ -88,12 +88,11 @@ exports.postEditProducts = (req,res,next) => {
     return product.save()  
     .then(result => res.redirect('/admin/products'))
     .catch(err =>{
-      console.log(err);
+      next(new Error(err));
     });
   })
   .catch(err =>{
-    console.log(err);
-    res.status(502).redirect('/');
+    next(new Error(err));
   });
 };
 
@@ -103,7 +102,6 @@ exports.postEditProducts = (req,res,next) => {
   Product.deleteOne({_id: id, userId: req.user._id})
   .then(result => res.redirect("/admin/products"))
   .catch(err => {
-    console.log(err);
-    res.redirect('/');
+    next(new Error(err));
   })
  };

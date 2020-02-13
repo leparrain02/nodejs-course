@@ -11,7 +11,7 @@ const config = require('config');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
-const error404Controller = require('./controllers/error404');
+const errorController = require('./controllers/error');
 const User = require('./models/user');
 
 
@@ -53,7 +53,7 @@ app.use((req,res,next) => {
     next();
   })
   .catch(err => {
-    console.log(err);
+    next(new Error(err));
   });
 
 });
@@ -68,7 +68,14 @@ app.use('/admin',adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
-app.use(error404Controller.getError404);
+app.get('/500',errorController.getError500);
+
+app.use(errorController.getError404);
+
+app.use((error,req,res,next) => {
+  console.log(error);
+  res.redirect('/500');
+});
 
 mongoose.connect(MONGODBURI,config.mongodb.params)
 .then(result => {
