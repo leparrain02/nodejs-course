@@ -3,12 +3,25 @@ const Product = require('../models/product');
 
 exports.postAddProducts = (req,res,next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
+  
+  if(!image){
+    return res.render('admin/edit-product',{
+      pageTitle: 'Add Product', 
+      editing: false,
+      prodTitle: title,
+      prodPrice: price,
+      prodDescription: description,
+      path: '/admin/add-product',
+      errorMessage: 'The image is in a invalid format'
+    });
+  }
+
   const product = new Product({
     title: title, 
-    imageUrl: imageUrl, 
+    imageUrl: `/${image.path}`, 
     price: price, 
     description: description,
     userId: req.user
@@ -19,8 +32,7 @@ exports.postAddProducts = (req,res,next) => {
     res.redirect('/admin/products');
   })
   .catch(err => {
-    console.log(err);
-    res.status(502).redirect('/');
+    next(new Error(err));
   });
 };
 
@@ -28,8 +40,10 @@ exports.getAddProducts = (req,res,next) => {
   res.render('admin/edit-product',{
     pageTitle: 'Add Product', 
     editing: false,
-    path: '/admin/add-product',
-    isAuthenticated: req.session.isLogged
+    prodTitle: '',
+    prodPrice: '',
+    prodDescription: '',
+    path: '/admin/add-product'
   });
 };
 
@@ -40,7 +54,6 @@ exports.getProducts = (req,res,next) => {
       prods: products, 
       pageTitle: 'Admin Product', 
       path: '/admin/products',
-      isAuthenticated: req.session.isLogged
     });
   })
   .catch(err => {
@@ -55,15 +68,16 @@ exports.getEditProducts = (req,res,next) => {
   .then(product => {
     res.render('admin/edit-product',{
       pageTitle: 'Edit Product', 
-      product: product, 
+      prodId: id,
+      prodTitle: product.title, 
+      prodPrice: product.price,
+      prodDescription: product.description,
       editing: true,
-      path: '/admin/edit-product',
-      isAuthenticated: req.session.isLogged
+      path: '/admin/edit-product'
     });
   })
   .catch(err =>{
-    console.log(err);
-    res.status(502).redirect('/');
+    next(new Error(err));
   });
   
 };
@@ -71,7 +85,7 @@ exports.getEditProducts = (req,res,next) => {
 exports.postEditProducts = (req,res,next) => {
   const id = req.body.productId;
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
   
@@ -81,7 +95,9 @@ exports.postEditProducts = (req,res,next) => {
       return res.redirect('/');
     }
     product.title = title;
-    product.imageUrl = imageUrl;
+    if(image){
+      product.imageUrl = `/${image.path}`;
+    }
     product.price = price;
     product.description = description;
 
