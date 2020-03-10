@@ -6,15 +6,29 @@ const PDFDocument = require('pdfkit');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
+const ITEM_BY_PAGE = 2;
 
 exports.getListProducts = (req,res,next) => {
-  Product.find()
+  const page = +req.query.page || 1;
+  let totalItem;
+  Product.find().countDocuments()
+  .then(prodNum =>{
+    totalItem = prodNum;
+    return Product.find().skip((page - 1) * ITEM_BY_PAGE).limit(ITEM_BY_PAGE);
+  })
   .then(products => {
+    console.log(page);
     res.render('shop/product-list',{
       prods: products, 
       pageTitle: 'Products list', 
       path: '/products',
-      isAuthenticated: req.session.isLogged
+      isAuthenticated: req.session.isLogged,
+      currentPage: page,
+      previousPage: page-1,
+      nextPage:page+1,
+      lastPage:Math.ceil(totalItem/ITEM_BY_PAGE),
+      hasPreviousPage: page > 2,
+      hasNextPage: page < Math.ceil(totalItem/ITEM_BY_PAGE)-1
     });
   })
   .catch(err => {

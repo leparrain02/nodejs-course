@@ -1,0 +1,14 @@
+section.pagination
+  - var current = currentPage
+  if currentPage !== 1
+    a(href="?page=1") 1
+  if hasPreviousPage
+    - var previous = previousPage
+    a(href="?page=" + previous) #{previousPage}
+  a.active(href="?page=" + current) #{currentPage}
+  if hasNextPage
+    - var next = nextPage
+    a(href="?page=" + next) #{nextPage}
+  if currentPage !== lastPage
+    - var last = lastPage
+    a(href="?page=" + last) #{lastPage}
