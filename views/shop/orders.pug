@@ -8,8 +8,10 @@ block content
     h1 Your orders
     ul.orders
       for order in orders
+        - var orderId = order._id
         li.orders__item
-          h2 Orders - # #{order._id}
+          h2 Orders - # #{order._id} 
+            a(href='/order/' + orderId) Invoice
           ul.orders__products
             for p in order.products
               li.orders__products-item #{p.product.title} quantity: #{p.quantity}
