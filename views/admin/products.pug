@@ -9,6 +9,7 @@ block content
       each product in prods
         - var imageURL = product.imageUrl;
         - var id = product._id;
+        - var token = csrfToken;
         article.card.product-item
           header.card__header
             h1.product__title #{product.title}
@@ -19,6 +20,11 @@ block content
             p.product__description #{product.description}
           .card__actions
             a.btn(href=`/admin/edit-product/${id}`) Edit
-            a.btn(href=`/admin/delete-product/${id}`) Delete
+            input(type="hidden", name="productId" value=id)
+            input(type="hidden", name="_csrf", value=token)
+            button.btn(type="button", onclick="deleteProduct(this)") Delete
   else
-    h1 No Product  
+    h1 No Product
+  
+block script
+  script(src="/js/admin.js")
